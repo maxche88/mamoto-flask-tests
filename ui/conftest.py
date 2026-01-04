@@ -1,3 +1,4 @@
+# Содержит фикстуры (подготовка и очистка окружения).
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -7,6 +8,11 @@ from config.test_settings import BASE_URL
 
 @pytest.fixture(scope="function")
 def browser():
+    """
+    Создаёт экземпляр Chrome, открывает стартовую страницу, закрывает после теста,
+    автоматически доступен во всех тестах без импорта.
+    Обеспечивает изоляцию тестов (каждый запускается в чистом браузере).
+    """
     # Автоматическая загрузка ChromeDriver
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()

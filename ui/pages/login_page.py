@@ -1,3 +1,6 @@
+"""
+Форма входа. Содержит локаторы (селекторы полей) и бизнес-метод login().
+"""
 from selenium.webdriver.common.by import By
 from .base_page import BasePage
 

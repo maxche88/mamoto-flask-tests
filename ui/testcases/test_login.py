@@ -1,5 +1,5 @@
 import pytest
-from tests.pages.login_page import LoginPage
+from ui.pages.login_page import LoginPage
 from config.test_settings import ADMIN_EMAIL, ADMIN_PASSWORD
 
 

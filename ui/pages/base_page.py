@@ -1,3 +1,6 @@
+"""
+Базовый класс для всех страниц. Содержит универсальные методы работы с WebDriver: ожидания, клики, ввод текста. Все страницы наследуются от него.
+"""
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
