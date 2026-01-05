@@ -6,12 +6,12 @@
 корректность данных в ответе.
 """
 import pytest
-from config.test_settings import ADMIN_EMAIL, ADMIN_PASSWORD
+from config.test_settings import USER_NAME, USER_PASSWORD
 
 def test_login_success(api_client):
     response = api_client.post("/auth/login", json={
-        "email": ADMIN_EMAIL,
-        "password": ADMIN_PASSWORD
+        "email": USER_NAME,
+        "password": USER_PASSWORD
     })
     assert response.status_code == 200
     assert "access_token" in response.json()
