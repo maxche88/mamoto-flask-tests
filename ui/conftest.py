@@ -1,4 +1,5 @@
-# Содержит фикстуры (подготовка и очистка окружения).
+# Содержит фикстуры, специфичные для UI-тестов.
+# Обеспечивает изолированный запуск браузера для каждого теста.
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -9,14 +10,13 @@ from config.test_settings import BASE_URL
 @pytest.fixture(scope="function")
 def browser():
     """
-    Создаёт экземпляр Chrome, открывает стартовую страницу, закрывает после теста,
-    автоматически доступен во всех тестах без импорта.
-    Обеспечивает изоляцию тестов (каждый запускается в чистом браузере).
+    Создаёт экземпляр браузера Chrome, открывает базовую страницу,
+    и закрывает браузер после завершения теста.
+    Фикстура автоматически доступна всем тестам в подкаталоге ui/tests/.
     """
-    # Автоматическая загрузка ChromeDriver
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")  # Отключает визуальное представления браузера
+    # options.add_argument("--headless")  # можно включить для CI
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
