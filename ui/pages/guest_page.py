@@ -1,11 +1,10 @@
 # Содержит локаторы и бизнес-методы для всех действий неавторизованного пользователя (гостя).
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 from ui.base_page import BasePage
 
 
 class GuestPageLocators:
-    """Класс с локаторами для всех страниц, доступных гостю."""
+    """Класс с локаторами для тестирования всех страниц, доступных гостю."""
     # Главная страница
     LOCATOR_GUEST_WELCOME = (By.CSS_SELECTOR, ".user_greeting h4")
     LOCATOR_FIRST_PRODUCT_LINK = (By.CSS_SELECTOR, ".title_product a.product-title-link")
@@ -16,11 +15,20 @@ class GuestPageLocators:
     # Модальное окно "Задать вопрос"
     LOCATOR_ASK_NAME_INPUT = (By.NAME, "name")
     LOCATOR_ASK_EMAIL_INPUT = (By.NAME, "email")
+    LOCATOR_ASK_CATEGORY_SELECT = (By.NAME, "category")
     LOCATOR_ASK_MESSAGE_TEXTAREA = (By.NAME, "message")
     LOCATOR_ASK_SUBMIT_BUTTON = (By.CSS_SELECTOR, "button.btn-submit[type='submit']")
 
-    # Уведомление об успешной отправке
-    LOCATOR_SUCCESS_ALERT = (By.XPATH, "//*[contains(text(), 'Ваш вопрос отправлен!')]")
+    # Уведомление об успешной отправке сообщения
+    LOCATOR_SUCCESS_MESS = (By.ID, "custom-notification")
+
+    # Модальное окно "Написать нам"
+    LOCATOR_CONTACT_TAB = (By.CSS_SELECTOR, ".guest-contact-tab")
+
+    # Опции в выпадающем списке категории
+    LOCATOR_CATEGORY_OPTION_PRODUCT = (By.XPATH, "//select[@name='category']//option[@value='1']")
+    LOCATOR_CATEGORY_OPTION_OTHER = (By.XPATH, "//select[@name='category']//option[@value='3']")
+    LOCATOR_CATEGORY_OPTION_TECH = (By.XPATH, "//select[@name='category']//option[@value='2']")
 
 
 
@@ -61,13 +69,36 @@ class GuestPageHelper(BasePage):
         self.fill_ask_form(name, email, message)
         self.submit_ask_form()
 
-    # Проверки
-    def get_success_alert_text(self) -> str:
+    def get_success_text(self) -> str:
         """
         Ожидает появления уведомления об успешной отправке и возвращает его текст.
         """
-        try:
-            alert_el = self.find_element(GuestPageLocators.LOCATOR_SUCCESS_ALERT, time=10)
-            return alert_el.text.strip()
-        except TimeoutException:
-            return ""
+        alert_el = self.find_element(GuestPageLocators.LOCATOR_SUCCESS_MESS, time=10)
+        return alert_el.text.strip()
+
+    def open_contact_form_from_main(self):
+        """Открывает форму 'Написать нам' с главной страницы."""
+        self.click_element(GuestPageLocators.LOCATOR_CONTACT_TAB)
+
+    def fill_contact_form_with_category(self, name: str, email: str, category: str, message: str):
+        self.enter_text(GuestPageLocators.LOCATOR_ASK_NAME_INPUT, name)
+        self.enter_text(GuestPageLocators.LOCATOR_ASK_EMAIL_INPUT, email)
+
+        # Прямой выбор опции
+        option_locator = {
+            "1": GuestPageLocators.LOCATOR_CATEGORY_OPTION_PRODUCT,
+            "2": GuestPageLocators.LOCATOR_CATEGORY_OPTION_TECH,
+            "3": GuestPageLocators.LOCATOR_CATEGORY_OPTION_OTHER,
+        }.get(category)
+        
+        if not option_locator:
+            raise ValueError(f"Неизвестная категория: {category}")
+        
+        self.click_element(option_locator)
+        self.enter_text(GuestPageLocators.LOCATOR_ASK_MESSAGE_TEXTAREA, message)
+
+    def send_message_from_main_page(self, name: str, email: str, category: str, message: str):
+        """Полный сценарий отправки сообщения с главной страницы."""
+        self.open_contact_form_from_main()
+        self.fill_contact_form_with_category(name, email, category, message)
+        self.submit_ask_form()

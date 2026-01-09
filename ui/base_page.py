@@ -51,3 +51,4 @@ class BasePage:
         """Находит элемент и выполняет по нему клик с предварительной задержкой."""
         self._apply_delay()
         self.find_element(locator).click()
+
