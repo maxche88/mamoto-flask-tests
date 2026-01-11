@@ -52,20 +52,62 @@ class TestGuestPositive:
         """
         guest_page = GuestPageHelper(browser)
 
-        # 1. Открываем главную страницу
+        # Открываем главную страницу
         guest_page.go_to_site()
 
-        # 2. Кликаем по первому товару
+        # Кликаем по первому товару
         guest_page.click_first_product()
 
-        # 3. Отправляем вопрос
+        # Отправляем вопрос
         guest_page.send_question_as_guest(
             name=USER_NAME,
             email=USER_EMAIL,
             message="Есть ли этот товар в наличии?"
         )
 
-        # 4. Проверяем успешное уведомление
+        # Проверяем успешное уведомление
         success_text = guest_page.get_success_text()
         assert success_text == "Ваш вопрос отправлен!", \
             f"Ожидалось 'Ваш вопрос отправлен!', получено: '{success_text}'"
+    
+    def test_guest_can_search_product(self, browser):
+        """
+        Проверяет, что гость может найти товар через поиск:
+        - вводит 'Shredder DS 3900',
+        - нажимает кнопку поиска,
+        - система отображает карточку с этим товаром,
+        - заголовок карточки содержит ожидаемое название.
+        """
+        guest_page = GuestPageHelper(browser)
+        guest_page.go_to_site()
+
+        search_query = "Shredder DS 3900"
+
+        guest_page.enter_search_query(search_query)
+        guest_page.click_search_button()
+
+        # Получаем заголовок первого товара после поиска
+        first_title = guest_page.get_first_product_title()
+
+        # Проверяем, что он содержит введённый запрос
+        assert search_query in first_title, f"Первый товар '{first_title}' не содержит поисковый запрос '{search_query}'"
+
+
+class TestGuestNegative:
+    def test_guest_can_invalid_search_product(self, browser):
+        """
+        Проверяет, что при вводе несуществующего названия товара
+        отображается сообщение 'Товаров не найдено.'.
+        """
+        guest_page = GuestPageHelper(browser)
+        guest_page.go_to_site()
+
+        invalid_query = "zxcvbnm12345"
+
+        guest_page.enter_search_query(invalid_query)
+        guest_page.click_search_button()
+
+        actual_message = guest_page.get_no_products_message()
+        expected_message = "Товаров не найдено."
+        assert actual_message == expected_message, \
+            f"Ожидалось '{expected_message}', получено: '{actual_message}'"

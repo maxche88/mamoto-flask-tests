@@ -16,7 +16,7 @@ def browser():
     """
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")  # можно включить для CI
+    # options.add_argument("--headless")  # Тесты без отображения браузера
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 

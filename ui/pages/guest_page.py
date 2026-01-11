@@ -30,6 +30,12 @@ class GuestPageLocators:
     LOCATOR_CATEGORY_OPTION_OTHER = (By.XPATH, "//select[@name='category']//option[@value='3']")
     LOCATOR_CATEGORY_OPTION_TECH = (By.XPATH, "//select[@name='category']//option[@value='2']")
 
+    # Поиск на главной странице
+    LOCATOR_SEARCH_INPUT = (By.ID, "search-input")
+    LOCATOR_SEARCH_BUTTON = (By.ID, "search-btn")
+
+    # Сообщение об отсутствии товаров
+    LOCATOR_NO_PRODUCTS_MESSAGE = (By.CSS_SELECTOR, "#product-container p")
 
 
 class GuestPageHelper(BasePage):
@@ -102,3 +108,26 @@ class GuestPageHelper(BasePage):
         self.open_contact_form_from_main()
         self.fill_contact_form_with_category(name, email, category, message)
         self.submit_ask_form()
+
+    def enter_search_query(self, query: str):
+        """Вводит поисковый запрос в поле поиска."""
+        self.enter_text(GuestPageLocators.LOCATOR_SEARCH_INPUT, query)
+
+    def click_search_button(self):
+        """Нажимает кнопку поиска."""
+        self.click_element(GuestPageLocators.LOCATOR_SEARCH_BUTTON)
+
+    def get_first_product_title(self) -> str:
+        """
+        Возвращает текст заголовка первого отображаемого товара.
+        Ожидает появления элемента до 10 секунд.
+        """
+        element = self.find_element(GuestPageLocators.LOCATOR_FIRST_PRODUCT_LINK, time=10)
+        return element.text.strip()
+
+    def get_no_products_message(self) -> str:
+        """
+        Ожидает появления сообщения 'Товаров не найдено.' и возвращает его текст.
+        """
+        element = self.find_element(GuestPageLocators.LOCATOR_NO_PRODUCTS_MESSAGE, time=10)
+        return element.text.strip()
